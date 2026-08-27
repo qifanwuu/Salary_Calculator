@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import sys
 
 
 # 每日工资x + 每d天, 有b奖金。
@@ -7,11 +8,20 @@ daily = input("你每天的收入是: ")
 daily = int(daily)
 per_day_get_bonus = input("你每工作[？]天就可以拿到奖金")
 per_day_get_bonus = int(per_day_get_bonus)
-bonus = input("奖金是: ")
-bonus = int(bonus)
+bonusflag = 1
+if per_day_get_bonus == 0:
+    print("那就是没有奖金喽,但是不能填0，不然程序会炸掉哦ovo，自动为你修改了。")
+    per_day_get_bonus = sys.maxsize
+    bonusflag = 0
+    bonus = 0
+if bonusflag: #如果flag = 1，那么证明需要填奖金。如果flag = 0，等于没奖金（0）.
+    bonus = input("奖金是: ")
+    bonus = int(bonus)
 
-plt.rcParams["font.sans-serif"] = ["SimHei"]   # 黑体
+plt.rcParams["font.sans-serif"] = ["PingFang SC", "Heiti SC", "SimHei", "Microsoft YaHei", "Arial Unicode MS"]
+# 多平台适配，自动降级适配
 plt.rcParams["axes.unicode_minus"] = False
+plt.rcParams["font.weight"] = "bold" 
 
 def calculate_income_for_days(work_days):
     """计算指定工作天数的总收入"""
@@ -34,7 +44,7 @@ def calculate_income_for_days(work_days):
     return pd.DataFrame(records), total_sum
 
 # 计算不同工作天数的影响
-day = 21
+day = 23
 day_range = range(1, day)  # 1-30天
 income_results = [] #声明一个列表
 
@@ -45,7 +55,7 @@ for days in day_range:
         "Total Income": total_income,
         "Daily Average": total_income / days,
         "Bonus Count": days // per_day_get_bonus,
-        "Total Bonus": (days // per_day_get_bonus) * bonus
+        "Total Bonus": (days // per_day_get_bonus) * bonus if bonusflag else 0
     })
 
 # 创建结果DataFrame
@@ -58,7 +68,7 @@ print("=" * 60)
 print(results_df.to_string(index=False))
 
 # 生成图表
-plt.figure(figsize=(8, 5.2))
+plt.figure(figsize=(9, 5.2))
 days = results_df["Work Days"].unique()
 
 # 子图1: 总收入与工作天数关系
